@@ -1,0 +1,212 @@
+<field_definition level="1" prec="4" operation="average" enabled=".TRUE." default_value="1.e20" >
+ <field_group id="ptrc_T" grid_ref="grid_T_3D">
+  <field id="ergom_t_n2" long_name="ergom dissolved molecular nitrogen" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_o2" long_name="ergom dissolved oxygen" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_dic" long_name="ergom dissolved inorganic carbon, treated as carbon dioxide" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_nh4" long_name="ergom ammonium" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_no3" long_name="ergom nitrate" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_po4" long_name="ergom phosphate" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_spp" long_name="ergom small-cell phytoplankton" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_zoo" long_name="ergom zooplankton" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_h2s" long_name="ergom hydrogen sulfide" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_sul" long_name="ergom sulfur" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_alk" long_name="ergom total alkalinity" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_fe3plus" long_name="ergom virtual tracer (iron-III ion)" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_ipw" long_name="ergom suspended iron phosphate" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_lpp" long_name="ergom large-cell phytoplankton" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_cya" long_name="ergom diazotroph cyanobacteria" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_det" long_name="ergom detritus" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_si" long_name="ergom silicate" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_detsi" long_name="ergom silicate fraction of detritus" unit="mol/kg" default_value="-.200E+21" />
+  <field id="ergom_t_cdom" long_name="ergom colored dissolved organic carbon" unit="mol/kg" default_value="-.200E+21" />
+ </field_group>
+ <field_group id="sf_T" grid_ref="grid_T_2D">
+  <field id="ergom_t_sed" long_name="ergom sediment detritus" unit="mol/m**2" default_value="-.200E+21" />
+  <field id="ergom_t_ips" long_name="ergom iron phosphate in sediment" unit="mol/m**2" default_value="-.200E+21" />
+  <field id="ergom_t_sedsi" long_name="ergom silicate fraction of sediment detritus" unit="mol/m**2" default_value="-.200E+21" />
+ </field_group>
+ <field_group id="diad_T" grid_ref="grid_T_2D">
+  <field id="light_swr" long_name="light shortwave radiation" unit="W m-2" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="light_par" long_name="light photosynthetically active radiation" unit="W m-2" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="light__attenuation_coefficient_of_photosynthetic_radiative_flux" long_name="light light extinction contribution computed by get_light_extinction" unit="m-1" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_n2_sms" long_name="ergom dissolved molecular nitrogen sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_n2_w" long_name="ergom dissolved molecular nitrogen vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_o2_sms" long_name="ergom dissolved oxygen sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_o2_w" long_name="ergom dissolved oxygen vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_dic_sms" long_name="ergom dissolved inorganic carbon, treated as carbon dioxide sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_dic_w" long_name="ergom dissolved inorganic carbon, treated as carbon dioxide vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_nh4_sms" long_name="ergom ammonium sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_nh4_w" long_name="ergom ammonium vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_no3_sms" long_name="ergom nitrate sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_no3_w" long_name="ergom nitrate vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_po4_sms" long_name="ergom phosphate sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_po4_w" long_name="ergom phosphate vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_spp_sms" long_name="ergom small-cell phytoplankton sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_spp_w" long_name="ergom small-cell phytoplankton vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_zoo_sms" long_name="ergom zooplankton sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_zoo_w" long_name="ergom zooplankton vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_h2s_sms" long_name="ergom hydrogen sulfide sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_h2s_w" long_name="ergom hydrogen sulfide vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_sul_sms" long_name="ergom sulfur sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_sul_w" long_name="ergom sulfur vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_alk_sms" long_name="ergom total alkalinity sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_alk_w" long_name="ergom total alkalinity vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_fe3plus_sms" long_name="ergom virtual tracer (iron-III ion) sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_fe3plus_w" long_name="ergom virtual tracer (iron-III ion) vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_ipw_sms" long_name="ergom suspended iron phosphate sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_ipw_w" long_name="ergom suspended iron phosphate vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_lpp_sms" long_name="ergom large-cell phytoplankton sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_lpp_w" long_name="ergom large-cell phytoplankton vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_cya_sms" long_name="ergom diazotroph cyanobacteria sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_cya_w" long_name="ergom diazotroph cyanobacteria vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_det_sms" long_name="ergom detritus sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_det_w" long_name="ergom detritus vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_si_sms" long_name="ergom silicate sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_si_w" long_name="ergom silicate vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_detsi_sms" long_name="ergom silicate fraction of detritus sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_detsi_w" long_name="ergom silicate fraction of detritus vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_cdom_sms" long_name="ergom colored dissolved organic carbon sources-sinks" unit="mol/kg/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_t_cdom_w" long_name="ergom colored dissolved organic carbon vertical velocity" unit="m/s" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="ergom_PAR" long_name="ergom photosynthetically active radiation" unit="W/m**2" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom_p_no3_assim_lpp" long_name="ergom assimilation of nitrate by large-cell phytoplankton" unit="mol/kg/d" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom_p_nh4_assim_lpp" long_name="ergom assimilation of ammonium by large-cell phytoplankton" unit="mol/kg/d" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom_p_detsi_resp_si" long_name="ergom recycling of silicate detritus using oxygen (respiration)" unit="mol/kg/d" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom_p_detsi_denit_si" long_name="ergom recycling of silicate detritus using nitrate (denitrification)" unit="mol/kg/d" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom_p_detsi_sulf_si" long_name="ergom recycling of silicate detritus using sulfate (sulfate reduction)" unit="mol/kg/d" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom_p_cdom_decay" long_name="ergom decay of cdom due to light" unit="mol/kg/d" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="ergom__attenuation_coefficient_of_photosynthetic_radiative_flux" long_name="ergom light extinction contribution computed by get_light_extinction" unit="m-1" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="zero" long_name="zero" unit="" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="total_nitrogen_calculator_result" long_name="total_nitrogen_calculator result" unit="mmol m-3" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="attenuation_coefficient_of_photosynthetic_radiative_flux_calculator_result" long_name="attenuation_coefficient_of_photosynthetic_radiative_flux_calculator result" unit="m-1" default_value="-.200E+21" grid_ref="grid_T_3D" />
+  <field id="zero_sms_tot" long_name="zero_sms_tot" unit="" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="zero_w_tot" long_name="zero_w_tot" unit="" default_value="0.000E+00" grid_ref="grid_T_3D" />
+  <field id="light_par0" long_name="light surface photosynthetically active radiation" unit="W m-2" default_value="-.200E+21" />
+  <field id="light__surface_albedo" long_name="light albedo contribution computed by get_albedo" unit="-" default_value="0.000E+00" />
+  <field id="light__surface_drag_coefficient_in_air" long_name="light surface drag contribution computed by get_drag" unit="-" default_value="0.000E+00" />
+  <field id="ergom_t_n2_sfl" long_name="ergom dissolved molecular nitrogen surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_n2_bfl" long_name="ergom dissolved molecular nitrogen bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_o2_sfl" long_name="ergom dissolved oxygen surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_o2_bfl" long_name="ergom dissolved oxygen bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_dic_sfl" long_name="ergom dissolved inorganic carbon, treated as carbon dioxide surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_dic_bfl" long_name="ergom dissolved inorganic carbon, treated as carbon dioxide bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_nh4_sfl" long_name="ergom ammonium surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_nh4_bfl" long_name="ergom ammonium bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_no3_sfl" long_name="ergom nitrate surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_no3_bfl" long_name="ergom nitrate bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_po4_sfl" long_name="ergom phosphate surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_po4_bfl" long_name="ergom phosphate bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_spp_sfl" long_name="ergom small-cell phytoplankton surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_spp_bfl" long_name="ergom small-cell phytoplankton bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_zoo_sfl" long_name="ergom zooplankton surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_zoo_bfl" long_name="ergom zooplankton bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_h2s_sfl" long_name="ergom hydrogen sulfide surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_h2s_bfl" long_name="ergom hydrogen sulfide bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_sul_sfl" long_name="ergom sulfur surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_sul_bfl" long_name="ergom sulfur bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_alk_sfl" long_name="ergom total alkalinity surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_alk_bfl" long_name="ergom total alkalinity bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_fe3plus_sfl" long_name="ergom virtual tracer (iron-III ion) surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_fe3plus_bfl" long_name="ergom virtual tracer (iron-III ion) bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_ipw_sfl" long_name="ergom suspended iron phosphate surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_ipw_bfl" long_name="ergom suspended iron phosphate bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_lpp_sfl" long_name="ergom large-cell phytoplankton surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_lpp_bfl" long_name="ergom large-cell phytoplankton bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_cya_sfl" long_name="ergom diazotroph cyanobacteria surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_cya_bfl" long_name="ergom diazotroph cyanobacteria bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_det_sfl" long_name="ergom detritus surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_det_bfl" long_name="ergom detritus bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_si_sfl" long_name="ergom silicate surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_si_bfl" long_name="ergom silicate bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_detsi_sfl" long_name="ergom silicate fraction of detritus surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_detsi_bfl" long_name="ergom silicate fraction of detritus bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_cdom_sfl" long_name="ergom colored dissolved organic carbon surface flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_cdom_bfl" long_name="ergom colored dissolved organic carbon bottom flux" unit="mol/kg*m/s" default_value="0.000E+00" />
+  <field id="ergom_t_sed_sms" long_name="ergom sediment detritus sources-sinks" unit="mol/m**2/s" default_value="0.000E+00" />
+  <field id="ergom_t_ips_sms" long_name="ergom iron phosphate in sediment sources-sinks" unit="mol/m**2/s" default_value="0.000E+00" />
+  <field id="ergom_t_sedsi_sms" long_name="ergom silicate fraction of sediment detritus sources-sinks" unit="mol/m**2/s" default_value="0.000E+00" />
+  <field id="ergom__surface_albedo" long_name="ergom albedo contribution computed by get_albedo" unit="-" default_value="0.000E+00" />
+  <field id="ergom__surface_drag_coefficient_in_air" long_name="ergom surface drag contribution computed by get_drag" unit="-" default_value="0.000E+00" />
+  <field id="zero_hz" long_name="zero_hz" unit="" default_value="0.000E+00" />
+  <field id="surface_albedo_calculator_result" long_name="surface_albedo_calculator result" unit="1" default_value="-.200E+21" />
+  <field id="surface_drag_coefficient_in_air_calculator_result" long_name="surface_drag_coefficient_in_air_calculator result" unit="1" default_value="-.200E+21" />
+  <field id="zero_sfl_tot" long_name="zero_sfl_tot" unit="" default_value="0.000E+00" />
+  <field id="zero_bfl_tot" long_name="zero_bfl_tot" unit="" default_value="0.000E+00" />
+  <field id="zero_hz_sms_tot" long_name="zero_hz_sms_tot" unit="" default_value="0.000E+00" />
+  <field id="ergom_t_n2_VINT" long_name="depth-integrated ergom dissolved molecular nitrogen" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_o2_VINT" long_name="depth-integrated ergom dissolved oxygen" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_dic_VINT" long_name="depth-integrated ergom dissolved inorganic carbon, treated as carbon dioxide" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_nh4_VINT" long_name="depth-integrated ergom ammonium" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_no3_VINT" long_name="depth-integrated ergom nitrate" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_po4_VINT" long_name="depth-integrated ergom phosphate" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_spp_VINT" long_name="depth-integrated ergom small-cell phytoplankton" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_zoo_VINT" long_name="depth-integrated ergom zooplankton" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_h2s_VINT" long_name="depth-integrated ergom hydrogen sulfide" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_sul_VINT" long_name="depth-integrated ergom sulfur" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_alk_VINT" long_name="depth-integrated ergom total alkalinity" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_fe3plus_VINT" long_name="depth-integrated ergom virtual tracer (iron-III ion)" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_ipw_VINT" long_name="depth-integrated ergom suspended iron phosphate" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_lpp_VINT" long_name="depth-integrated ergom large-cell phytoplankton" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_cya_VINT" long_name="depth-integrated ergom diazotroph cyanobacteria" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_det_VINT" long_name="depth-integrated ergom detritus" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_si_VINT" long_name="depth-integrated ergom silicate" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_detsi_VINT" long_name="depth-integrated ergom silicate fraction of detritus" unit="mol/kg*m" default_value="0.0" />
+  <field id="ergom_t_cdom_VINT" long_name="depth-integrated ergom colored dissolved organic carbon" unit="mol/kg*m" default_value="0.0" />
+  <field id="light_swr_VINT" long_name="depth-integrated light shortwave radiation" unit="W m-2*m" default_value="0.0" />
+  <field id="light_par_VINT" long_name="depth-integrated light photosynthetically active radiation" unit="W m-2*m" default_value="0.0" />
+  <field id="light__attenuation_coefficient_of_photosynthetic_radiative_flux_VINT" long_name="depth-integrated light light extinction contribution computed by get_light_extinction" unit="m-1*m" default_value="0.0" />
+  <field id="ergom_t_n2_sms_VINT" long_name="depth-integrated ergom dissolved molecular nitrogen sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_n2_w_VINT" long_name="depth-integrated ergom dissolved molecular nitrogen vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_o2_sms_VINT" long_name="depth-integrated ergom dissolved oxygen sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_o2_w_VINT" long_name="depth-integrated ergom dissolved oxygen vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_dic_sms_VINT" long_name="depth-integrated ergom dissolved inorganic carbon, treated as carbon dioxide sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_dic_w_VINT" long_name="depth-integrated ergom dissolved inorganic carbon, treated as carbon dioxide vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_nh4_sms_VINT" long_name="depth-integrated ergom ammonium sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_nh4_w_VINT" long_name="depth-integrated ergom ammonium vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_no3_sms_VINT" long_name="depth-integrated ergom nitrate sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_no3_w_VINT" long_name="depth-integrated ergom nitrate vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_po4_sms_VINT" long_name="depth-integrated ergom phosphate sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_po4_w_VINT" long_name="depth-integrated ergom phosphate vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_spp_sms_VINT" long_name="depth-integrated ergom small-cell phytoplankton sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_spp_w_VINT" long_name="depth-integrated ergom small-cell phytoplankton vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_zoo_sms_VINT" long_name="depth-integrated ergom zooplankton sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_zoo_w_VINT" long_name="depth-integrated ergom zooplankton vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_h2s_sms_VINT" long_name="depth-integrated ergom hydrogen sulfide sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_h2s_w_VINT" long_name="depth-integrated ergom hydrogen sulfide vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_sul_sms_VINT" long_name="depth-integrated ergom sulfur sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_sul_w_VINT" long_name="depth-integrated ergom sulfur vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_alk_sms_VINT" long_name="depth-integrated ergom total alkalinity sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_alk_w_VINT" long_name="depth-integrated ergom total alkalinity vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_fe3plus_sms_VINT" long_name="depth-integrated ergom virtual tracer (iron-III ion) sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_fe3plus_w_VINT" long_name="depth-integrated ergom virtual tracer (iron-III ion) vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_ipw_sms_VINT" long_name="depth-integrated ergom suspended iron phosphate sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_ipw_w_VINT" long_name="depth-integrated ergom suspended iron phosphate vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_lpp_sms_VINT" long_name="depth-integrated ergom large-cell phytoplankton sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_lpp_w_VINT" long_name="depth-integrated ergom large-cell phytoplankton vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_cya_sms_VINT" long_name="depth-integrated ergom diazotroph cyanobacteria sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_cya_w_VINT" long_name="depth-integrated ergom diazotroph cyanobacteria vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_det_sms_VINT" long_name="depth-integrated ergom detritus sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_det_w_VINT" long_name="depth-integrated ergom detritus vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_si_sms_VINT" long_name="depth-integrated ergom silicate sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_si_w_VINT" long_name="depth-integrated ergom silicate vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_detsi_sms_VINT" long_name="depth-integrated ergom silicate fraction of detritus sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_detsi_w_VINT" long_name="depth-integrated ergom silicate fraction of detritus vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_t_cdom_sms_VINT" long_name="depth-integrated ergom colored dissolved organic carbon sources-sinks" unit="mol/kg/s*m" default_value="0.0" />
+  <field id="ergom_t_cdom_w_VINT" long_name="depth-integrated ergom colored dissolved organic carbon vertical velocity" unit="m/s*m" default_value="0.0" />
+  <field id="ergom_PAR_VINT" long_name="depth-integrated ergom photosynthetically active radiation" unit="W/m**2*m" default_value="0.0" />
+  <field id="ergom_p_no3_assim_lpp_VINT" long_name="depth-integrated ergom assimilation of nitrate by large-cell phytoplankton" unit="mol/kg/d*m" default_value="0.0" />
+  <field id="ergom_p_nh4_assim_lpp_VINT" long_name="depth-integrated ergom assimilation of ammonium by large-cell phytoplankton" unit="mol/kg/d*m" default_value="0.0" />
+  <field id="ergom_p_detsi_resp_si_VINT" long_name="depth-integrated ergom recycling of silicate detritus using oxygen (respiration)" unit="mol/kg/d*m" default_value="0.0" />
+  <field id="ergom_p_detsi_denit_si_VINT" long_name="depth-integrated ergom recycling of silicate detritus using nitrate (denitrification)" unit="mol/kg/d*m" default_value="0.0" />
+  <field id="ergom_p_detsi_sulf_si_VINT" long_name="depth-integrated ergom recycling of silicate detritus using sulfate (sulfate reduction)" unit="mol/kg/d*m" default_value="0.0" />
+  <field id="ergom_p_cdom_decay_VINT" long_name="depth-integrated ergom decay of cdom due to light" unit="mol/kg/d*m" default_value="0.0" />
+  <field id="ergom__attenuation_coefficient_of_photosynthetic_radiative_flux_VINT" long_name="depth-integrated ergom light extinction contribution computed by get_light_extinction" unit="m-1*m" default_value="0.0" />
+  <field id="zero_VINT" long_name="depth-integrated zero" unit="*m" default_value="0.0" />
+  <field id="total_nitrogen_calculator_result_VINT" long_name="depth-integrated total_nitrogen_calculator result" unit="mmol m-3*m" default_value="0.0" />
+  <field id="attenuation_coefficient_of_photosynthetic_radiative_flux_calculator_result_VINT" long_name="depth-integrated attenuation_coefficient_of_photosynthetic_radiative_flux_calculator result" unit="m-1*m" default_value="0.0" />
+  <field id="zero_sms_tot_VINT" long_name="depth-integrated zero_sms_tot" unit="*m" default_value="0.0" />
+  <field id="zero_w_tot_VINT" long_name="depth-integrated zero_w_tot" unit="*m" default_value="0.0" />
+ </field_group>
+ <field_group id="fabm_scalar" grid_ref="grid_0">
+  <field id="total_nitrogen" long_name="total_nitrogen" unit="mmol m-3" default_value="-.200E+21" />
+ </field_group>
+</field_definition>

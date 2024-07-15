@@ -1,0 +1,37 @@
+#
+# This arch file was automatically created by ./build_arch-auto.sh
+# T juuli  4 17:09:44 EEST 2023 
+#
+%NCDF_C_PREFIX       /mnt/archive/private/ilja.maljutenko/libs/gcc-11/
+%NCDF_F_PREFIX       /mnt/archive/private/ilja.maljutenko/libs/gcc-11/
+%HDF5_PREFIX         //mnt/archive/private/ilja.maljutenko/libs/gcc-11/
+%XIOS_PREFIX         /mnt/archive/private/ilja.maljutenko/XIOS/trunk_gnu/
+%OASIS_PREFIX        notdef
+
+%FABM_INC            -I/home/ilja.maljutenko/local/fabm/nemo/include
+%FABM_LIB            -L/home/ilja.maljutenko/local/fabm/nemo/lib -lfabm
+
+%NCDF_INC            -I%NCDF_F_PREFIX/include -I%NCDF_C_PREFIX/include
+%NCDF_LIB            -L%NCDF_F_PREFIX/lib -lnetcdff -L%NCDF_C_PREFIX/lib -lnetcdf -L%HDF5_PREFIX/lib -lhdf5_hl -lhdf5   -lz  -lm
+%XIOS_INC            -I%XIOS_PREFIX/inc
+%XIOS_LIB            -L%XIOS_PREFIX/lib -lxios -lstdc++ 
+%OASIS_INC           
+%OASIS_LIB           
+
+%CPP	             cpp -Dkey_nosignedzero  
+%FC                  mpif90 
+%FCFLAGS             -fdefault-real-8 -O3 -march=native -funroll-all-loops -fcray-pointer -ffree-line-length-none -fallow-argument-mismatch 
+### comment out the following line if you want to use the debugging compilation options
+#%FCFLAGS            -fdefault-real-8 -Og -g -fbacktrace -funroll-all-loops -fcray-pointer -ffree-line-length-none -fcheck=all -finit-real=nan -ffpe-trap=invalid,zero,overflow -ffpe-summary=invalid,zero,overflow -fallow-argument-mismatch 
+%FFLAGS              %FCFLAGS
+%LD                  %FC
+%LDFLAGS             
+%FPPFLAGS            -P -traditional  %FABM_INC
+%AR                  ar
+%ARFLAGS             rs
+%MK                  make
+%USER_INC            %XIOS_INC %OASIS_INC %NCDF_INC  %FABM_INC
+%USER_LIB            %XIOS_LIB %OASIS_LIB %NCDF_LIB  %FABM_LIB
+
+%CC                  gcc
+%CFLAGS              -O0

@@ -1,0 +1,107 @@
+instances:
+  light:
+    model: gotm/light
+    parameters:
+      a:  0.58       # non-visible fraction of shortwave radiation, default = 
+      g1: 0.35        # e-folding depth of non-visible fraction, default =  
+      g2: 5.0        # e-folding depth of visible fraction, default =      
+  ergom:
+    model: balmfc/ergom_cdom #bsh_ergombsh  
+    parameters:
+      critical_stress: 0.016
+      cya0           : 4.5E-9
+      din_min_lpp    : 1.125E-6
+      din_min_spp    : 4.5E-7
+      dip_min_cya    : 1.125E-7
+      epsilon        : 4.5E-17
+      food_min_zoo   : 4.108E-6
+      gamma0         : 0.27
+      gamma1         : 30.0 #58.0
+#      gamma2         : 0. #53.
+#      gamma3         : 0.0 #12.6
+      h2s_min_po4_liber: 1.0E-6
+      ips_threshold  : 0.1
+      ips_cl         : 0.02025
+      k_h2s_no3      : 800000.0
+      k_h2s_o2       : 800000.0
+      k_sul_no3      : 20000.0
+      k_sul_o2       : 20000.0
+      light_opt_cya  : 50.0
+      light_opt_lpp  : 35.0
+      light_opt_spp  : 50.0
+      lpp0           : 4.5E-9
+      no3_min_sed_denit: 1.423E-7
+      no3_min_det_denit: 1.0E-9
+      o2_min_det_resp: 1.0E-6
+      o2_min_nit     : 3.75E-6
+      o2_min_po4_retent: 3.75E-5
+      o2_min_sed_resp: 6.4952E-5
+      q10_det_rec    : 0.15
+      q10_h2s        : 0.0693
+      q10_nit        : 0.11
+      q10_sed_rec    : 0.175
+      r_biores       : 0.03
+      r_cya_assim    : 0.75
+      r_det_rec      : 0.003
+      r_ips_burial   : 0.007
+      r_ips_ero      : 6.0
+      r_ips_liber    : 0.1
+      r_lpp_assim    : 1.3
+      r_nh4_nitrif   : 0.1
+      r_pp_mort      : 0.02
+      r_pp_resp      : 0.01
+      r_sed_ero      : 6.0
+      r_sed_rec      : 0.002
+      r_spp_assim    : 0.4
+      r_zoo_graz     : 0.5
+      r_zoo_mort     : 0.03
+      r_zoo_resp     : 0.01
+      rfr_c          : 6.625
+      rfr_h          : 16.4375
+      rfr_o          : 6.875
+      rfr_p          : 0.0625
+      sali_max_cya   : 10.0
+      sali_min_cya   : 0.0    
+      sed_max        : 4.5
+      spp0           : 4.5E-9
+      temp_min_cya   : 13.5
+      temp_min_spp   : 10.0
+      temp_opt_zoo   : 20.0
+      w_cya          : 0.1
+      w_det          : -4.5
+      w_det_sedi     : -2.25
+      w_ipw          : -1.0
+      w_ipw_sedi     : -0.5
+      w_lpp          : -0.5
+      w_n2_stf       : 5.0
+      w_o2_stf       : 5.0
+#      w_no3_stf      : 8.3E-8 
+#      w_nh4_stf      : 6.0E-8 
+#      w_po4_stf      : 1.5E-9  
+      zoo0           : 4.5E-9
+      zoo_cl         : 9.0E-8
+    initialization:
+      t_n2   : 520.0e-6
+      t_o2   : 300.0e-6
+      t_dic  : 1500.0e-6       
+      t_alk  : 0.00150279805529863
+      t_nh4  : 0.10e-6
+      t_no3  : 10.50e-6
+      t_po4  : 1.e-6
+      t_si   : 3.e-6      
+      t_lpp  : 0.1e-6      
+      t_spp  : 0.1e-6
+      t_cya  : 0.01e-6      
+      t_zoo  : 0.01e-6
+      t_h2s  : 0.01e-6
+      t_sul  : 0.01e-8            
+      t_ipw  : 0.01e-6
+      t_det  : 0.01e-6
+      t_detsi: 0.01e-6
+      t_fe3plus: 2.1e-9
+      t_cdom: 6.5e-6      
+      t_sed  : 0.1
+      t_ips  : 0.1
+      t_sedsi: 0.002
+
+

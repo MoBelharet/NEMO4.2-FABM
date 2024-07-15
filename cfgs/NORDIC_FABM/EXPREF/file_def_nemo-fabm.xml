@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+
+    <!-- 
+============================================================================================================
+=                                           output files definition                                        =
+=                                            Define your own files                                         =
+=                                         put the variables you want...                                    =
+============================================================================================================
+    -->
+    
+    <file_definition type="one_file" name="@expname@_@freq@_@startdate@_@enddate@" sync_freq="1d" min_digits="4">
+    
+      <file_group id="1ts" output_freq="1ts"  output_level="10" enabled=".TRUE."> <!-- 1 time step files -->
+        <file id="file255" name_suffix="_ptrc_T" description="tracer variables" enabled=".FALSE.">
+            <field field_ref="ergom_t_n2" operation="instant" />
+		    <field field_ref="ergom_t_o2" operation="instant" />
+            <field field_ref="ergom_t_nh4" operation="instant" />
+            <field field_ref="ergom_t_no3" operation="instant" />
+            <field field_ref="ergom_t_po4" operation="instant" />
+            <field field_ref="ergom_t_dic" operation="instant" />
+            <field field_ref="ergom_t_lpp" operation="instant" />
+            <field field_ref="ergom_t_spp" operation="instant" />
+            <field field_ref="ergom_t_zoo" operation="instant" />
+            <field field_ref="ergom_t_h2s" operation="instant" />
+            <field field_ref="ergom_t_sul" operation="instant" />
+            <field field_ref="ergom_t_alk" operation="instant" />
+            <field field_ref="ergom_t_ipw" operation="instant" />
+            <field field_ref="ergom_t_cya" operation="instant" />
+            <field field_ref="ergom_t_si" operation="instant" /> 
+            <field field_ref="ergom_t_det" operation="instant" />  
+            <field field_ref="ergom_t_detsi" operation="instant" />  
+            <field field_ref="ergom_t_fe3plus" operation="instant" /> 
+            <field field_ref="ergom_t_cdom" operation="instant" />
+        </file>
+      </file_group>
+   
+      <file_group id="1h" output_freq="1h" output_level="10" enabled=".TRUE."> <!--split_freq="1h" split_freq_format="%h"  -->
+        <file id="file266" name_suffix="_ptrc_T" description="tracer variables" enabled=".FALSE.">
+            <field field_ref="ergom_t_n2" operation="instant" />
+		    <field field_ref="ergom_t_o2" operation="instant" />
+            <field field_ref="ergom_t_nh4" operation="instant" />
+            <field field_ref="ergom_t_no3" operation="instant" />
+            <field field_ref="ergom_t_po4" operation="instant" />
+            <field field_ref="ergom_t_dic" operation="instant" />
+            <field field_ref="ergom_t_lpp" operation="instant" />
+            <field field_ref="ergom_t_spp" operation="instant" />
+            <field field_ref="ergom_t_zoo" operation="instant" />
+            <field field_ref="ergom_t_h2s" operation="instant" />
+            <field field_ref="ergom_t_sul" operation="instant" />
+            <field field_ref="ergom_t_alk" operation="instant" />
+            <field field_ref="ergom_t_ipw" operation="instant" />
+            <field field_ref="ergom_t_cya" operation="instant" />
+            <field field_ref="ergom_t_si" operation="instant" /> 
+            <field field_ref="ergom_t_det" operation="instant" />  
+            <field field_ref="ergom_t_detsi" operation="instant" />  
+            <field field_ref="ergom_t_fe3plus" operation="instant" /> 
+            <field field_ref="ergom_t_cdom" operation="instant" />
+        </file>
+
+
+        <file id="file267" name_suffix="_SED_grid_T" description="sediment tracer variables" enabled=".FALSE.">
+            <field field_ref="ergom_t_sed" operation="instant" grid_ref="grid_T_2D"/>       
+            <field field_ref="ergom_t_sedsi" operation="instant" grid_ref="grid_T_2D"/> 
+            <field field_ref="ergom_t_ips" operation="instant" grid_ref="grid_T_2D"/>   
+        </file> 
+          
+       </file_group>
+    <!-- 1h files      
+   <field field_ref="qsr"         name="qsr"     operation="average" /> 
+-->
+
+      <file_group id="2h" output_freq="2h"  output_level="10" enabled=".TRUE."/> <!-- 2h files -->
+
+      <file_group id="3h" output_freq="3h"  output_level="10" enabled=".TRUE."/> <!-- 3h files -->     
+
+      <file_group id="4h" output_freq="4h"  output_level="10" enabled=".TRUE."/> <!-- 4h files -->
+
+      <file_group id="6h" output_freq="6h"  output_level="10" enabled=".TRUE."/> <!-- 6h files -->     
+
+      <file_group id="1d" output_freq="1d"  output_level="10" enabled=".TRUE."> <!-- 1d files -->
+      
+        <file id="file200" name_suffix="_ptrc_T" description="tracer variables" split_freq="1d" split_freq_format="%d" sync_freq="1d" enabled=".TRUE.">
+            <field field_ref="ergom_t_n2" operation="average" />
+            <field field_ref="ergom_t_o2" operation="average" />
+            <field field_ref="ergom_t_nh4" operation="average" />
+            <field field_ref="ergom_t_no3" operation="average" />
+            <field field_ref="ergom_t_po4" operation="average" />
+            <field field_ref="ergom_t_dic" operation="average" />
+            <field field_ref="ergom_t_lpp" operation="average" />
+            <field field_ref="ergom_t_spp" operation="average" />
+            <field field_ref="ergom_t_zoo" operation="average" />
+            <field field_ref="ergom_t_h2s" operation="average" />
+            <field field_ref="ergom_t_sul" operation="average" />
+            <field field_ref="ergom_t_alk" operation="average" />
+            <field field_ref="ergom_t_ipw" operation="average" />
+            <field field_ref="ergom_t_cya" operation="average" />
+            <field field_ref="ergom_t_si" operation="average" /> 
+            <field field_ref="ergom_t_det" operation="average" />  
+            <field field_ref="ergom_t_detsi" operation="average" />  
+            <field field_ref="ergom_t_fe3plus" operation="average" /> 
+            <field field_ref="ergom_t_cdom" operation="average" />
+        </file>
+
+        <file id="file201" name_suffix="_SED_grid_T" description="sediment tracer variables" split_freq="1d" split_freq_format="%d" sync_freq="1d" enabled=".TRUE.">
+            <field field_ref="ergom_t_sed" operation="average" grid_ref="grid_T_2D"/>       
+            <field field_ref="ergom_t_sedsi" operation="average" grid_ref="grid_T_2D"/> 
+            <field field_ref="ergom_t_ips" operation="average" grid_ref="grid_T_2D"/>   
+        </file> 
+        
+  <!--         
+          <field field_ref="tracer3_c" operation="average" /> 
+       
+  -->
+    </file_group>
+      
+      <file_group id="3d" output_freq="3d"  output_level="10" enabled=".TRUE."/> <!-- 3d files -->
+      <file_group id="5d" output_freq="5d"  output_level="10" enabled=".TRUE."/> <!-- 5d files -->   
+      <file_group id="1m" output_freq="1mo" output_level="10" enabled=".TRUE."/> <!-- real monthly files -->
+      <file_group id="2y"  output_freq="2y" output_level="10" enabled=".TRUE."/> <!-- real 2y files -->
+      <file_group id="5y"  output_freq="5y" output_level="10" enabled=".TRUE."/> <!-- real 5y files -->
+      <file_group id="10y" output_freq="10y" output_level="10" enabled=".TRUE."/> <!-- real 10y files -->
+
+   </file_definition>
+    
