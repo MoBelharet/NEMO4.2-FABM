@@ -33,9 +33,10 @@ MODULE trcsms_fabm
    USE xios
    USE cpl_oasis3
    USE st2D_fabm
-! TODO remove inputs   USE inputs_fabm
+   USE inputs_fabm
    USE vertical_movement_fabm
    USE fabm
+   USE fabm_types,only:type_interior_standard_variable
 
    IMPLICIT NONE
 
@@ -116,7 +117,6 @@ CONTAINS
 
       IF (kt == nittrc000) CALL nemo_fabm_start
 
-!      CALL update_inputs( kt, Kbb, Kmm, Krhs  )
 
       ! update links to FABM to ensure that FABM is pointing to the correct time index !
       ! Send pointers to state data to FABM
@@ -146,6 +146,8 @@ CONTAINS
       CALL model%link_interior_data(fabm_standard_variables%cell_thickness, e3t(:,:,:, Kmm))
 #endif
 
+      CALL update_inputs( kt )
+
       CALL compute_fabm( kt, Kbb, Kmm , Krhs )
 
       CALL compute_vertical_movement( kt, nn_adv, Kbb, Kmm, Krhs  )
@@ -155,7 +157,7 @@ CONTAINS
       IF( l_trdtrc )  ztrfabm(:,:,:) = 0._wp
 
       ! CALL trc_bc       ( kt )        from NEMO4 boundary conditions now called with TRP
-      ! CALL trc_rnf_fabm ( kt, Kbb, Kmm  ) ! River forcings
+      ! CALL trc_rnf_fabm ( kt, Kmm, Krhs  ) ! River forcings 
 
       ! Send 3D diagnostics to output (these apply to time "n")
       DO jn = 1, size(model%interior_diagnostic_variables)
@@ -499,8 +501,9 @@ CONTAINS
       END DO
 
       ! Send pointers to environmental data to FABM
-     
+      
       CALL model%link_interior_data(fabm_standard_variables%temperature, ts(:,:,:,jp_tem,Kmm))
+      CALL model%link_horizontal_data(fabm_standard_variables%surface_temperature, ts(:,:,1,jp_tem,Kmm)) ! Mokrane
       CALL model%link_interior_data(fabm_standard_variables%practical_salinity, ts(:,:,:,jp_sal,Kmm))
       IF (ALLOCATED(rho)) CALL model%link_interior_data(fabm_standard_variables%density, rho(:,:,:))
       IF (ALLOCATED(prn)) CALL model%link_interior_data(fabm_standard_variables%pressure, prn)
@@ -510,7 +513,8 @@ CONTAINS
       CALL model%link_scalar(fabm_standard_variables%number_of_days_since_start_of_the_year, daynumber_in_year)
       CALL model%link_horizontal_data(fabm_standard_variables%wind_speed, wndm(:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%surface_downwelling_shortwave_flux, qsr(:,:))
-!      CALL model%link_horizontal_data(fabm_standard_variables%bottom_depth_below_geoid, ht_0(:,:))
+      CALL model%link_horizontal_data(fabm_standard_variables%surface_mean_downwelling_shortwave_flux,qsr_mean(:,:))
+      CALL model%link_horizontal_data(fabm_standard_variables%bottom_depth_below_geoid, ht_0(:,:)) ! Mokrane
       CALL model%link_horizontal_data(fabm_standard_variables%ice_area_fraction, fr_i(:,:))
 ! TODO  rewrite FABM models such that they wouldn't include temporal integration!
       !CALL model%link_scalar(fabm_standard_variables%timestep, rdt)
@@ -518,9 +522,14 @@ CONTAINS
       CALL model%link_horizontal_data(fabm_standard_variables%bottom_depth, ht_0(:,:))
       ! use avs because temperature diffusivity (avt) is/might be affected by doublediffusivity
       !CALL model%link_interior_data(fabm_standard_variables%diffusivity, avs(:,:,:))
+      CALL model%link_interior_data(type_interior_standard_variable(name='vertical_tracer_diffusivity', units='m2 s-1'), avt(:,:,:)) !Mokrane    
       ! in some FABM versions, vertical_tracer_diffusivity is a standard variable
       ! CALL model%link_interior_data(fabm_standard_variables%vertical_tracer_diffusivity, avs(:,:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%surface_air_pressure, apr(:,:))
+      CALL model%link_horizontal_data(fabm_standard_variables%mixed_layer_thickness_defined_by_vertical_tracer_diffusivity, hmld(:,:)) ! Mokrane
+      !CALL model%link_scalar(type_global_standard_variable(name='physical_time_step', units='s'), rDt_trc)
+      CALL model%link_scalar(fabm_standard_variables%physical_time_step, rDt_trc)
+
 #if defined key_qco
       DO_3D(0,0,0,0,1,jpkm1)
          gdept_dummy(ji,jj,jk) = (gdept_0(ji,jj,jk)*(1._wp+r3t(ji,jj,Kmm)))
@@ -535,8 +544,8 @@ CONTAINS
 #endif
 
       ! Obtain user-specified input variables (read from NetCDF file)
-!      call link_inputs
-!      call update_inputs( nit000, .false. )
+      call link_inputs
+      call update_inputs( nit000, .false. )
 
       ! Set mask for negativity corrections to the relevant states
       lk_rad_fabm(:) = .FALSE.
@@ -578,8 +587,9 @@ CONTAINS
    !!   Dummy module                                        No FABM model
    !!----------------------------------------------------------------------
 CONTAINS
-   SUBROUTINE trc_sms_fabm( kt,Kbb, Kmm, Krhs )             ! Empty routine
+   SUBROUTINE trc_sms_fabm( kt, Kbb, Kmm, Krhs )              ! Empty routine
       INTEGER, INTENT( in ) ::   kt
+      INTEGER, INTENT( in ) ::   Kbb, Kmm, Krhs ! time level indices
       WRITE(*,*) 'trc_sms_fabm: You should not have seen this print! error?', kt
    END SUBROUTINE trc_sms_fabm
 #endif

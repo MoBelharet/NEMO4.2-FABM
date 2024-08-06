@@ -44,6 +44,7 @@ MODULE fldread
  
    PUBLIC   fld_map    ! routine called by tides_init
    PUBLIC   fld_read, fld_fill   ! called by sbc... modules
+   PUBLIC   fld_clopn
    PUBLIC   fld_def
 
    TYPE, PUBLIC ::   FLD_N      !: Namelist field informations
@@ -912,6 +913,7 @@ CONTAINS
       llprev = sdjf%nrecsec(sdjf%nreclast) < nsec000_1jan000   ! file ends before the beginning of the job -> file may not exist
       llnext = sdjf%nrecsec(      1      ) > nsecend_1jan000   ! file begins after the end of the job -> file may not exist 
 
+
       llstop = sdjf%ln_clim .OR. .NOT. ( llprev .OR. llnext )
 
       IF( sdjf%num <= 0 .OR. .NOT. sdjf%ln_clim  ) THEN
@@ -934,6 +936,7 @@ CONTAINS
             CALL fld_def( sdjf )                  ! go back to current file
          ENDIF
          ! -> read "last" record but keep record info from the first record of next file
+
          sdjf%nrecsec(  sdjf%nreclast  ) = isave
          sdjf%nrecsec(0:sdjf%nreclast-1) = nflag
          !
