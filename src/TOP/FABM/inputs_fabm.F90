@@ -42,6 +42,7 @@ MODULE inputs_fabm
 
    TYPE, PUBLIC, EXTENDS(type_input_variable) :: type_input_data
       TYPE(type_fabm_horizontal_variable_id)   :: horizontal_id
+      TYPE(type_fabm_interior_variable_id)   :: interior_id
       TYPE(type_input_data), POINTER   :: next => null()
    END TYPE
    TYPE (type_input_data), POINTER, PUBLIC :: first_input_data => NULL()
@@ -89,15 +90,25 @@ MODULE inputs_fabm
            ALLOCATE(input_data, STAT=ierr)
            IF( ierr > 0 ) CALL ctl_stop( 'STOP', 'inputs_fabm:initialize_inputs: unable to allocate input_data object for variable '//TRIM(name) )
            input_data%horizontal_id = model%get_horizontal_variable_id(name)
-           IF (.NOT.model%is_variable_used(input_data%horizontal_id)) THEN
+           input_data%interior_id = model%get_interior_variable_id(name) ! Mokrane
+           !IF (.NOT.model%is_variable_used(input_data%horizontal_id)) THEN
+           IF ((.NOT.model%is_variable_used(input_data%horizontal_id)) .AND. (.NOT.model%is_variable_used(input_data%interior_id)) ) THEN ! Mokrane
               ! This variable was not found among FABM's horizontal variables (at least, those that are read by one or more FABM modules)
               CALL ctl_stop('STOP', 'inputs_fabm:initialize_inputs: variable "'//TRIM(name)//'" was not found among horizontal FABM variables.')
            END IF
            ALLOCATE(input_data%sf(1), STAT=ierr)
            IF( ierr > 0 ) CALL ctl_stop( 'STOP', 'inputs_fabm:initialize_inputs: unable to allocate sf structure for variable '//TRIM(name) )
            CALL fld_fill(input_data%sf, (/sn/), '', 'inputs_fabm:initialize_inputs', 'FABM variable '//TRIM(name), 'variable' )
-           ALLOCATE( input_data%sf(1)%fnow(jpi,jpj,1)   )
-           IF( sn%ln_tint ) ALLOCATE( input_data%sf(1)%fdta(jpi,jpj,1,2) )
+           
+           IF(model%is_variable_used(input_data%horizontal_id)) THEN
+                   ALLOCATE( input_data%sf(1)%fnow(jpi,jpj,1)   )
+                   IF( sn%ln_tint ) ALLOCATE( input_data%sf(1)%fdta(jpi,jpj,1,2) )
+           ENDIF
+
+           IF(model%is_variable_used(input_data%interior_id)) THEN
+                   ALLOCATE( input_data%sf(1)%fnow(jpi,jpj,jpk)   )
+                   IF( sn%ln_tint ) ALLOCATE( input_data%sf(1)%fdta(jpi,jpj,jpk,2) )
+           ENDIF
 
            ! Get number of record in file (if there is only one, we will read data
            ! only at the very first time step)
@@ -181,7 +192,11 @@ MODULE inputs_fabm
       DO WHILE (ASSOCIATED(input_data))
          ! Provide FABM with pointer to field that will receive prescribed data.
          ! NB source=data_source_user guarantees that the prescribed data takes priority over any data FABM may already have for that variable.
-         CALL model%link_horizontal_data(input_data%horizontal_id,input_data%sf(1)%fnow(:,:,1),source=data_source_user)
+         IF(model%is_variable_used(input_data%horizontal_id)) THEN
+             CALL model%link_horizontal_data(input_data%horizontal_id,input_data%sf(1)%fnow(:,:,1),source=data_source_user)
+         ELSEIF (model%is_variable_used(input_data%interior_id)) THEN
+                 CALL model%link_interior_data(input_data%interior_id,input_data%sf(1)%fnow(:,:,:),source=data_source_user)
+         ENDIF
          input_data => input_data%next
       END DO
 
