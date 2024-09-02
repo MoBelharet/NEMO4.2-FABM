@@ -62,6 +62,10 @@ MODULE trcsms_fabm
 #if defined key_qco
    REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: gdept_dummy, e3t_dummy
 #endif
+  !--------Mokrane ----------------------------------------------
+  REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: zcmask
+  !-------------------------------------------------------------
+
    REAL(wp), PUBLIC, TARGET :: daynumber_in_year
 
    ! state check type
@@ -101,7 +105,7 @@ CONTAINS
       INTEGER, INTENT(in) ::   kt   ! ocean time-step index
       INTEGER, INTENT( in ) ::   Kbb, Kmm, Krhs ! time level indices      
       INTEGER :: ji, jj, jn, jk
-      REAL(wp), DIMENSION(jpi,jpj,jpk) :: ztrfabm
+      REAL(wp), DIMENSION(jpi,jpj,jpk) :: ztrfabm 
       REAL(wp), POINTER, DIMENSION(:,:,:) :: pdat
       REAL(wp), DIMENSION(jpi,jpj)    :: vint
 
@@ -443,6 +447,10 @@ CONTAINS
       INTEGER, INTENT( in ) ::    Kmm  ! time level indices    
       INTEGER :: jn
       INTEGER :: ji,jj,jk
+      !------- Mokrane ---------
+      INTEGER  :: ik50                !  last level where depth less than 50 m
+      REAL(wp) :: zsurfc, zsurfp,ze3t, ze3t2, zcslp
+      REAL(wp), PARAMETER :: distcoast = 5.e3
       !!----------------------------------------------------------------------
       !!              ***  ROUTINE trc_sms_fabm_alloc  ***
       !!----------------------------------------------------------------------
@@ -471,6 +479,11 @@ CONTAINS
 #if defined key_qco
       ALLOCATE(gdept_dummy(jpi,jpj,jpk), e3t_dummy(jpi,jpj,jpk))
 #endif 
+      
+      !------------ Mokrane --------------
+      ALLOCATE(zcmask(jpi,jpj,jpk) )
+      !-----------------------------------
+
       trc_sms_fabm_alloc = 0      ! set to zero if no array to be allocated
       !
       IF( trc_sms_fabm_alloc /= 0 ) CALL ctl_warn('trc_sms_fabm_alloc : failed to allocate arrays')
@@ -528,7 +541,40 @@ CONTAINS
       CALL model%link_horizontal_data(fabm_standard_variables%surface_air_pressure, apr(:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%mixed_layer_thickness_defined_by_vertical_tracer_diffusivity, hmld(:,:)) ! Mokrane
       !CALL model%link_scalar(type_global_standard_variable(name='physical_time_step', units='s'), rDt_trc)
-      CALL model%link_scalar(fabm_standard_variables%physical_time_step, rDt_trc)
+      !CALL model%link_scalar(fabm_standard_variables%physical_time_step, rDt_trc)
+      
+      CALL model%link_horizontal_data(fabm_standard_variables%cell_area,  e1e2t(:,:)) ! Mokrane: grid cell area
+      CALL model%link_horizontal_data(model%get_horizontal_variable_id('fmmflx'), fmmflx(:,:))
+      CALL model%link_interior_data(type_interior_standard_variable(name='ref_cell_thickness' , units='m'), e3t_0(:,:,:))
+      !---------- Mokrane --------------------
+
+      ik50 = 5        !  last level where depth less than 50 m
+      DO jk = jpkm1, 1, -1
+         IF( gdept_1d(jk) > 50. )   ik50 = jk - 1
+      END DO
+
+      zcmask(:,:,:) = 0.
+
+      DO_3D( 0, 0, 0, 0, 1, ik50 )
+         ze3t   = e3t_0(ji,jj,jk)
+         zsurfc =  e1u(ji,jj) * ( 1. - umask(ji  ,jj  ,jk) )   &
+                 + e1u(ji,jj) * ( 1. - umask(ji-1,jj  ,jk) )   &
+                 + e2v(ji,jj) * ( 1. - vmask(ji  ,jj  ,jk) )   &
+                 + e2v(ji,jj) * ( 1. - vmask(ji  ,jj-1,jk) )
+         zsurfp = zsurfc * ze3t / e1e2t(ji,jj)
+         ! estimation of the coastal slope : 5 km off the coast
+         ze3t2 = ze3t * ze3t
+         zcslp = SQRT( ( distcoast*distcoast + ze3t2 ) / ze3t2 )
+         zcmask(ji,jj,jk) = zcslp * zsurfp
+       
+      END_3D
+
+
+      CALL model%link_interior_data(type_interior_standard_variable(name='coastal_island_mask', units='1'), zcmask(:,:,:) )
+
+
+      !----------------------------------------
+      
 
 #if defined key_qco
       DO_3D(0,0,0,0,1,jpkm1)
