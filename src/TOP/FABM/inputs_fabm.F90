@@ -18,7 +18,7 @@ MODULE inputs_fabm
    USE iom
    USE fldread
    USE par_fabm
-   USE fabm, only: type_fabm_horizontal_variable_id
+   USE fabm, only: type_fabm_horizontal_variable_id, type_fabm_interior_variable_id
 
    IMPLICIT NONE
 

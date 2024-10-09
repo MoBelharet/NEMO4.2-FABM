@@ -37,6 +37,7 @@ MODULE trcsms_fabm
    USE vertical_movement_fabm
    USE fabm
    USE fabm_types,only:type_interior_standard_variable
+   USE eosbn2, ONLY : neos ! Mokrane
 
    IMPLICIT NONE
 
@@ -64,6 +65,7 @@ MODULE trcsms_fabm
 #endif
   !--------Mokrane ----------------------------------------------
   REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: zcmask
+  REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: salinprac
   !-------------------------------------------------------------
 
    REAL(wp), PUBLIC, TARGET :: daynumber_in_year
@@ -135,8 +137,15 @@ CONTAINS
       END DO
 
       ! Send pointers to environmental data to FABM
+      !------- Mokrane -------------------------------
+       IF (neos == -1) THEN
+            salinprac(:,:,:) =  ts(:,:,:,jp_sal,Kmm) * 35.0_wp / 35.16504_wp
+       ELSE
+            salinprac(:,:,:) = ts(:,:,:,jp_sal,Kmm)
+       ENDIF
+     !-----------------------------------------------
       CALL model%link_interior_data(fabm_standard_variables%temperature, ts(:,:,:,jp_tem,Kmm))
-      CALL model%link_interior_data(fabm_standard_variables%practical_salinity, ts(:,:,:,jp_sal,Kmm))
+      CALL model%link_interior_data(fabm_standard_variables%practical_salinity, salinprac(:,:,:))
 #if defined key_qco
       DO_3D(0,0,0,0,1,jpkm1)
          gdept_dummy(ji,jj,jk) = (gdept_0(ji,jj,jk)*(1._wp+r3t(ji,jj,Kmm)))
@@ -482,6 +491,7 @@ CONTAINS
       
       !------------ Mokrane --------------
       ALLOCATE(zcmask(jpi,jpj,jpk) )
+      ALLOCATE(salinprac(jpi,jpj,jpk) )
       !-----------------------------------
 
       trc_sms_fabm_alloc = 0      ! set to zero if no array to be allocated
@@ -517,7 +527,16 @@ CONTAINS
       
       CALL model%link_interior_data(fabm_standard_variables%temperature, ts(:,:,:,jp_tem,Kmm))
       CALL model%link_horizontal_data(fabm_standard_variables%surface_temperature, ts(:,:,1,jp_tem,Kmm)) ! Mokrane
-      CALL model%link_interior_data(fabm_standard_variables%practical_salinity, ts(:,:,:,jp_sal,Kmm))
+      !------- Mokrane -------------------------------
+      IF (neos == -1) THEN
+          salinprac(:,:,:) =  ts(:,:,:,jp_sal,Kmm) * 35.0_wp / 35.16504_wp
+          WRITE(numout,*) 'FABM : ratio neos =  ', 35.0_wp / 35.16504_wp
+      ELSE
+          salinprac(:,:,:) = ts(:,:,:,jp_sal,Kmm)
+      ENDIF
+      WRITE(numout,*) 'FABM : neos =  ', neos
+      !-----------------------------------------------
+      CALL model%link_interior_data(fabm_standard_variables%practical_salinity, salinprac(:,:,:))
       IF (ALLOCATED(rho)) CALL model%link_interior_data(fabm_standard_variables%density, rho(:,:,:))
       IF (ALLOCATED(prn)) CALL model%link_interior_data(fabm_standard_variables%pressure, prn)
       IF (ALLOCATED(taubot)) CALL model%link_horizontal_data(fabm_standard_variables%bottom_stress, taubot(:,:))
