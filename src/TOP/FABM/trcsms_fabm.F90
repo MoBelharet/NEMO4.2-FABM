@@ -38,6 +38,7 @@ MODULE trcsms_fabm
    USE fabm
    USE fabm_types,only:type_interior_standard_variable
    USE eosbn2, ONLY : neos ! Mokrane
+   USE fldread ! Mokrane
 
    IMPLICIT NONE
 
@@ -64,11 +65,13 @@ MODULE trcsms_fabm
    REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: gdept_dummy, e3t_dummy
 #endif
   !--------Mokrane ----------------------------------------------
-  REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: zcmask
+  REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: zcmask , zrivdin
   REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: salinprac
+
+  REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:)   :: zndep_no3, zndep_nh4
   !-------------------------------------------------------------
 
-   REAL(wp), PUBLIC, TARGET :: daynumber_in_year
+   REAL(wp), PUBLIC, TARGET :: daynumber_in_year, nday_year_
 
    ! state check type
    TYPE, PUBLIC :: type_state
@@ -106,10 +109,11 @@ CONTAINS
       !
       INTEGER, INTENT(in) ::   kt   ! ocean time-step index
       INTEGER, INTENT( in ) ::   Kbb, Kmm, Krhs ! time level indices      
-      INTEGER :: ji, jj, jn, jk
+      INTEGER :: ji, jj, jn, jk, jl, jpno3, jpnh4, jm
       REAL(wp), DIMENSION(jpi,jpj,jpk) :: ztrfabm 
-      REAL(wp), POINTER, DIMENSION(:,:,:) :: pdat
+      REAL(wp), POINTER, DIMENSION(:,:,:) :: pdat, xnegtr
       REAL(wp), DIMENSION(jpi,jpj)    :: vint
+      REAL(wp) :: zcoef, ztra
 
 !!----------------------------------------------------------------------
       !
@@ -143,9 +147,64 @@ CONTAINS
        ELSE
             salinprac(:,:,:) = ts(:,:,:,jp_sal,Kmm)
        ENDIF
+
+       nday_year_ = nday_year
+
+
+       jpno3 = 1
+       jpnh4 = 2
+       
+      ! -----------------------------------------
+      ! Add the external input of nutrients from river
+      ! ----------------------------------------------------------
+       IF (ln_trc_cbc(jpno3) ) THEN
+            zrivdin(:,:,:) = 0.
+           jl = n_trc_indcbc(jpno3)
+         DO_2D( nn_hls, nn_hls, nn_hls, nn_hls )
+            DO jk = 1, nk_rnf(ji,jj)
+                 zcoef = rn_rfact / ( e1e2t(ji,jj) * h_rnf(ji,jj) * rn_cbc_time ) * tmask(ji,jj,1)
+                 zrivdin(ji,jj,jk) = rf_trcfac(jl) * sf_trccbc(jl)%fnow(ji,jj,1) * zcoef 
+            ENDDO
+         END_2D
+
+         CALL model%link_interior_data(type_interior_standard_variable(name='input_river', units='molC m-3 s-1'), zrivdin(:,:,:) )
+
+       ENDIF
+
+
+      ! Add the external input of nutrients from nitrogen deposition
+      ! ----------------------------------------------------------
+
+       IF( ln_trc_sbc(jpno3) ) THEN
+               zndep_no3(:,:) = 0.
+            jl = n_trc_indsbc(jpno3)
+          DO_2D( nn_hls, nn_hls, nn_hls, nn_hls )
+               zndep_no3(ji,jj) = rf_trsfac(jl) * sf_trcsbc(jl)%fnow(ji,jj,1)  / rn_sbc_time  
+          END_2D
+          CALL model%link_horizontal_data(model%get_horizontal_variable_id('NO3_deposition_flux'), zndep_no3(:,:) )
+       ENDIF
+
+       IF( ln_trc_sbc(jpnh4) ) THEN
+               zndep_nh4(:,:) = 0.
+           jl = n_trc_indsbc(jpnh4)
+         DO_2D( nn_hls, nn_hls, nn_hls, nn_hls )
+              zndep_nh4(ji,jj) = rf_trsfac(jl) * sf_trcsbc(jl)%fnow(ji,jj,1)  / rn_sbc_time
+         END_2D
+         CALL model%link_horizontal_data(model%get_horizontal_variable_id('NH4_deposition_flux'), zndep_nh4(:,:) )
+       ENDIF
+      
+
      !-----------------------------------------------
+
+
       CALL model%link_interior_data(fabm_standard_variables%temperature, ts(:,:,:,jp_tem,Kmm))
+      CALL model%link_horizontal_data(fabm_standard_variables%surface_temperature, ts(:,:,1,jp_tem,Kmm)) ! Mokrane
       CALL model%link_interior_data(fabm_standard_variables%practical_salinity, salinprac(:,:,:))
+      CALL model%link_horizontal_data(fabm_standard_variables%ice_area_fraction, fr_i(:,:))
+      CALL model%link_scalar(fabm_standard_variables%number_of_days_since_start_of_the_year, nday_year_)
+      CALL model%link_horizontal_data(model%get_horizontal_variable_id('fmmflx'), fmmflx(:,:))
+      IF (ALLOCATED(rho)) CALL model%link_interior_data(fabm_standard_variables%density, rho(:,:,:))
+
 #if defined key_qco
       DO_3D(0,0,0,0,1,jpkm1)
          gdept_dummy(ji,jj,jk) = (gdept_0(ji,jj,jk)*(1._wp+r3t(ji,jj,Kmm)))
@@ -166,6 +225,27 @@ CONTAINS
       CALL compute_vertical_movement( kt, nn_adv, Kbb, Kmm, Krhs  )
 
       CALL st2d_fabm_nxt( kt, Kbb, Kmm, Krhs  )
+      ! Handling of the negative concentrations
+      ! The biological SMS may generate negative concentrations
+      ! Trends are tested at each grid cell. If a negative concentrations 
+      ! is created at a grid cell, all the sources and sinks at that grid 
+      ! cell are scale to avoid that negative concentration. This approach 
+      ! is quite simplistic but it conserves mass.
+      ! ------------------------------------------------------------------
+      ! Mokrane
+      !xnegtr(:,:,:) = 1.e0
+      !DO jn = 1, 24 !jp_fabm
+      !   jm = jn !jp_fabm_m1+jn
+      !    DO_3D( nn_hls, nn_hls, nn_hls, nn_hls, 1, jpk)
+      !       IF( ( tr(ji,jj,jk,jm,Kbb) + tr(ji,jj,jk,jm,Krhs) ) < 0.e0 ) THEN
+      !               ztra             = ABS( tr(ji,jj,jk,jm,Kbb) ) / ( ABS( tr(ji,jj,jk,jm,Krhs) ) + rtrn )
+      !               xnegtr(ji,jj,jk) = MIN( xnegtr(ji,jj,jk),  ztra )
+      !       ENDIF
+      !    END_3D
+      !    tr(:,:,:,jm,Krhs) = ( xnegtr(:,:,:) * tr(:,:,:,jm,Krhs) ) / rDt_trc
+      !ENDDO
+
+      !------------------------------------------------------------------------
 
       IF( l_trdtrc )  ztrfabm(:,:,:) = 0._wp
 
@@ -203,6 +283,7 @@ CONTAINS
       END IF
  
       IF( ln_timing )  CALL timing_stop('trc_sms_fabm')
+
 
    END SUBROUTINE trc_sms_fabm
 
@@ -457,8 +538,8 @@ CONTAINS
       INTEGER :: jn
       INTEGER :: ji,jj,jk
       !------- Mokrane ---------
-      INTEGER  :: ik50                !  last level where depth less than 50 m
-      REAL(wp) :: zsurfc, zsurfp,ze3t, ze3t2, zcslp
+      INTEGER  :: ik50, jpno3, jpnh4, jl               !  last level where depth less than 50 m
+      REAL(wp) :: zsurfc, zsurfp,ze3t, ze3t2, zcslp, zcoef
       REAL(wp), PARAMETER :: distcoast = 5.e3
       !!----------------------------------------------------------------------
       !!              ***  ROUTINE trc_sms_fabm_alloc  ***
@@ -490,8 +571,14 @@ CONTAINS
 #endif 
       
       !------------ Mokrane --------------
+      jpno3 = 1
+      jpnh4 = 2
+
       ALLOCATE(zcmask(jpi,jpj,jpk) )
       ALLOCATE(salinprac(jpi,jpj,jpk) )
+      IF(ln_trc_sbc(jpno3)) ALLOCATE(zndep_no3(jpi,jpj))
+      IF(ln_trc_sbc(jpnh4)) ALLOCATE(zndep_nh4(jpi,jpj))
+      IF(ln_trc_cbc(jpno3)) ALLOCATE(zrivdin(jpi,jpj,jpk) )
       !-----------------------------------
 
       trc_sms_fabm_alloc = 0      ! set to zero if no array to be allocated
@@ -535,14 +622,15 @@ CONTAINS
           salinprac(:,:,:) = ts(:,:,:,jp_sal,Kmm)
       ENDIF
       WRITE(numout,*) 'FABM : neos =  ', neos
+
       !-----------------------------------------------
       CALL model%link_interior_data(fabm_standard_variables%practical_salinity, salinprac(:,:,:))
       IF (ALLOCATED(rho)) CALL model%link_interior_data(fabm_standard_variables%density, rho(:,:,:))
-      IF (ALLOCATED(prn)) CALL model%link_interior_data(fabm_standard_variables%pressure, prn)
-      IF (ALLOCATED(taubot)) CALL model%link_horizontal_data(fabm_standard_variables%bottom_stress, taubot(:,:))
+      !IF (ALLOCATED(prn)) CALL model%link_interior_data(fabm_standard_variables%pressure, prn)
+      !IF (ALLOCATED(taubot)) CALL model%link_horizontal_data(fabm_standard_variables%bottom_stress, taubot(:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%latitude, gphit)
       CALL model%link_horizontal_data(fabm_standard_variables%longitude, glamt)
-      CALL model%link_scalar(fabm_standard_variables%number_of_days_since_start_of_the_year, daynumber_in_year)
+      CALL model%link_scalar(fabm_standard_variables%number_of_days_since_start_of_the_year, nday_year_) !daynumber_in_year)
       CALL model%link_horizontal_data(fabm_standard_variables%wind_speed, wndm(:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%surface_downwelling_shortwave_flux, qsr(:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%surface_mean_downwelling_shortwave_flux,qsr_mean(:,:))
@@ -591,7 +679,30 @@ CONTAINS
 
       CALL model%link_interior_data(type_interior_standard_variable(name='coastal_island_mask', units='1'), zcmask(:,:,:) )
 
+      !---------------------------------------------------------------------
+      ! Add the external input of nutrients from nitrogen deposition
+      !jpno3 = 1
+      !jpnh4 = 2
+      WRITE(numout,*) 'ln_trc_sbc(jpno3) = ', ln_trc_sbc(jpno3)
+      WRITE(numout,*) 'ln_trc_sbc(jpnh4) = ', ln_trc_sbc(jpnh4) 
+      
+      IF(ln_trc_sbc(jpno3)) THEN
+              zndep_no3(:,:) = 0.
+              CALL model%link_horizontal_data(model%get_horizontal_variable_id('NO3_deposition_flux'), zndep_no3(:,:) )
+      ENDIF
+      IF(ln_trc_sbc(jpnh4)) THEN
+              zndep_nh4(:,:) = 0.
+              CALL model%link_horizontal_data(model%get_horizontal_variable_id('NH4_deposition_flux'), zndep_nh4(:,:) )
+      ENDIF
+      
 
+      !------------------------------------------------------------------------
+      ! Add the external input of nutrients from river
+      
+      IF(ln_trc_cbc(jpno3)) THEN
+              zrivdin(:,:,:) = 0.
+              CALL model%link_interior_data(type_interior_standard_variable(name='input_river', units='molC m-3 s-1'), zrivdin(:,:,:) )
+      ENDIF
       !----------------------------------------
       
 
