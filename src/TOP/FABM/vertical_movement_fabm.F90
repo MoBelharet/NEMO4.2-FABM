@@ -16,6 +16,8 @@ MODULE vertical_movement_fabm
    USE fabm
    USE par_fabm
    USE dom_oce
+   USE trcsink ! Mokrane
+   USE iom
 #if defined key_trdtrc && defined key_iomput
    USE iom
    USE trdtrc_oce
@@ -34,6 +36,8 @@ MODULE vertical_movement_fabm
 
    ! Work arrays for vertical advection (residual movement/sinking/floating)
    REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:) :: w_ct
+
+
 #if defined key_trdtrc && defined key_iomput
    REAL(wp), PUBLIC, ALLOCATABLE, SAVE, TARGET, DIMENSION(:,:,:,:) :: tr_vmv
 #endif
@@ -54,8 +58,13 @@ MODULE vertical_movement_fabm
       INTEGER, INTENT(in) ::   kt   ! ocean time-step index
       INTEGER, INTENT(in) ::   method ! advection method (1: 1st order upstream, 3: 3rd order TVD with QUICKEST limiter)
       INTEGER, INTENT( in ) ::   Kbb, Kmm, Krhs ! time level indices  
-      INTEGER :: ji,jj,jk,jn,k_floor
+      INTEGER :: ji,jj,jk,jn,k_floor, id_i
       REAL(wp) :: zwgt_if(1:jpkm1-1), dc(1:jpkm1), w_if(1:jpkm1-1), z2dt, h(1:jpkm1)
+
+      !---- Mokrane -----
+      REAL(wp), DIMENSION(jpi,jpj,jpk) :: ws_, sinking_
+      REAL(wp), DIMENSION(jpi,jpj,jpk, jp_fabm) :: wsbio_
+      REAL(wp), DIMENSION(jpi,jp_fabm) :: toto_ws
 #if defined key_trdtrc
       CHARACTER (len=20) :: cltra
 #endif
@@ -63,6 +72,8 @@ MODULE vertical_movement_fabm
 #if defined key_trdtrc && defined key_iomput
       IF( lk_trdtrc ) tr_vmv = 0.0_wp
 #endif
+
+
      
 ! TODO check euler
 !      IF( neuler == 0 .AND. kt == nittrc000 ) THEN
@@ -73,48 +84,92 @@ MODULE vertical_movement_fabm
       ENDIF 
       
       ! Compute interior vertical velocities and include them in source array.
+
+      IF (method == 0) THEN
+
+              wsbio_(:,:,:,:) = 0._wp ! (ji,jk,jn)
+
+                DO jk=1,jpk
+                     CALL model%get_vertical_movement(1,1 ,1,jk,w_ct(:,jk,:))
+
+                         DO jn=1,jp_fabm
+                              wsbio_(:,:,jk,jn) = ABS(w_ct(1,jk,jn) * 86400)
+                         END DO
+                                                                                                                
+
+                END DO
+
+                wsbio_(:,:,1,:) = wsbio_(:,:,2,:)
+
+                sinking_(:,:,:) = 0.e0
+                DO jn=1,jp_fabm ! State loop
+                   ws_(:,:,:) = wsbio_(:,:,:,jn)
+                   IF (.NOT.( ALL( ws_(:,:,:) == 0._wp) )) THEN
+                           CALL trc_sink( kt, Kbb, Kmm, ws_, sinking_ , jn, 3600._wp )
+                   END IF
+                END DO
+
+
+                !CALL iom_put("wsbio_poc",wsbio_(:,:,:,7) * tmask(:,:,:) )
+                !CALL iom_put("wsbio_goc",wsbio_(:,:,:,9) * tmask(:,:,:) )
+
+
+      ELSE
+
       DO jj=ntsj, ntej !2,jpjm1 ! j-loop
          ! Get vertical velocities at layer centres (entire i-k slice).
          DO jk=1,jpkm1
             CALL model%get_vertical_movement(ntsi,ntei ,jj,jk,w_ct(:,jk,:))
          END DO
-         DO ji=ntsi,ntei ! fs_2,fs_jpim1 ! i-loop
-            ! Only process this horizontal point (ji,jj) if number of layers exceeds 1
-            k_floor = mbkt(ji,jj)
-            IF (k_floor > 1) THEN ! Level check
-               ! Linearly interpolate to velocities at the interfaces between layers
-               ! Note:
-               !    - interface k sits between cell centre k and k+1 (k=0 for surface)
-               !    - k [1,jpkm1] increases downwards
-               !    - upward velocity is positive, downward velocity is negative
-               h(1:k_floor) = e3t(ji,jj,1:k_floor, Kmm)
-               zwgt_if(1:k_floor-1) = h(2:k_floor) / (h(1:k_floor-1) + h(2:k_floor))
 
-               ! Advect:
-               DO jn=1,jp_fabm ! State loop
-                  IF (ALL(w_ct(ji,1:k_floor,jn) == 0._wp)) CYCLE
 
-                  ! Compute velocities at interfaces
-                  w_if(1:k_floor-1) = zwgt_if(1:k_floor-1) * w_ct(ji,1:k_floor-1,jn) + (1._wp - zwgt_if(1:k_floor-1)) * w_ct(ji,2:k_floor,jn)
+                DO ji=ntsi,ntei ! fs_2,fs_jpim1 ! i-loop
 
-                  ! Compute change (per volume) due to vertical movement per layer
-                  IF (method == 1) THEN
-                     CALL advect_1(k_floor, tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Kmm), w_if(1:k_floor-1), h(1:k_floor), z2dt, dc(1:k_floor))
-                  ELSE
-                     CALL advect_3(k_floor, tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Kbb), w_if(1:k_floor-1), h(1:k_floor), z2dt, dc(1:k_floor))
-                  END IF
 
-                  ! Incorporate change due to vertical movement in sources-sinks
-                  tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Krhs) = tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Krhs) + dc(1:k_floor)
+                   ! Only process this horizontal point (ji,jj) if number of layers exceeds 1
+                   k_floor = mbkt(ji,jj)
+                        IF (k_floor > 1) THEN ! Level check
+                           ! Linearly interpolate to velocities at the interfaces between layers
+                           ! Note:
+                           !    - interface k sits between cell centre k and k+1 (k=0 for surface)
+                           !    - k [1,jpkm1] increases downwards
+                           !    - upward velocity is positive, downward velocity is negative
+                           h(1:k_floor) = e3t(ji,jj,1:k_floor, Kmm)
+                           zwgt_if(1:k_floor-1) = h(2:k_floor) / (h(1:k_floor-1) + h(2:k_floor))
+
+                           ! Advect:
+                           DO jn=1,jp_fabm ! State loop
+
+                              IF (ALL(w_ct(ji,1:k_floor,jn) == 0._wp)) CYCLE
+
+                              ! Compute velocities at interfaces
+                              w_if(1:k_floor-1) = zwgt_if(1:k_floor-1) * w_ct(ji,1:k_floor-1,jn) + (1._wp - zwgt_if(1:k_floor-1)) * w_ct(ji,2:k_floor,jn)
+
+                              ! Compute change (per volume) due to vertical movement per layer
+                
+                              IF (method == 1) THEN
+                                        CALL advect_1(k_floor, tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Kmm), w_if(1:k_floor-1), h(1:k_floor), z2dt, dc(1:k_floor))
+                              ELSE
+                                        CALL advect_3(k_floor, tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Kbb), w_if(1:k_floor-1), h(1:k_floor), z2dt, dc(1:k_floor))
+                              END IF
+
+                              ! Incorporate change due to vertical movement in sources-sinks
+                              tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Krhs) = tr(ji,jj,1:k_floor,jp_fabm_m1+jn, Krhs) + dc(1:k_floor)
+
 
 #if defined key_trdtrc && defined key_iomput
-                  ! Store change due to vertical movement as diagnostic
-                  IF( lk_trdtrc .AND. ln_trdtrc( jp_fabm_m1+jn)) tr_vmv(ji,jj,1:k_floor,jn) = dc(1:k_floor)
+                              ! Store change due to vertical movement as diagnostic
+                              IF( lk_trdtrc .AND. ln_trdtrc( jp_fabm_m1+jn)) tr_vmv(ji,jj,1:k_floor,jn) = dc(1:k_floor)
 #endif
-              END DO ! State loop
-            END IF ! Level check
-         END DO ! i-loop
+                           END DO ! State loop
+                        END IF ! Level check
+                END DO ! i-loop
       END DO ! j-loop
+
+      END IF
+
+
+
 #if defined key_trdtrc && defined key_iomput
       DO jn=1,jp_fabm ! State loop
         IF( lk_trdtrc .AND. ln_trdtrc(jp_fabm_m1+jn) ) THEN
