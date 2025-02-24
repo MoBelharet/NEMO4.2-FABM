@@ -74,6 +74,9 @@ MODULE vertical_movement_fabm
 #endif
 
 
+        IF( iom_use("mbkt") ) THEN 
+                CALL iom_put("mbkt", mbkt(:,:) * tmask(:,:,1) )
+        END IF
      
 ! TODO check euler
 !      IF( neuler == 0 .AND. kt == nittrc000 ) THEN
