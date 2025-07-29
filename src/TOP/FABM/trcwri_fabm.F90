@@ -92,6 +92,20 @@ CONTAINS
       TYPE(type_state) :: valid_state
       !!---------------------------------------------------------------------
 
+      ! ----- Mokrane --------
+      ! update links to FABM to ensure that FABM is pointing to the correct time index !
+      ! Send pointers to state data to FABM
+       do jn=1,jp_fabm
+          CALL model%link_interior_state_data(jn,tr(:,:,:,jp_fabm_m1+jn,Kmm))
+       end do
+       DO jn=1,jp_fabm_surface
+          CALL model%link_surface_state_data(jn,fabm_st2Dn(:,:,jn))
+       END DO
+       DO jn=1,jp_fabm_bottom
+          CALL model%link_bottom_state_data(jn,fabm_st2Dn(:,:,jp_fabm_surface+jn))
+       END DO
+      !--------------------------------------
+      
       IF ( kt > nittrc000 ) THEN !can only check state if FABM model has been started!
          ! Validate current model state (setting argument to .TRUE. enables repair=clipping)
          valid_state%valid = .FALSE.

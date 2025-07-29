@@ -109,10 +109,11 @@ CONTAINS
       !
       INTEGER, INTENT(in) ::   kt   ! ocean time-step index
       INTEGER, INTENT( in ) ::   Kbb, Kmm, Krhs ! time level indices      
-      INTEGER :: ji, jj, jn, jk, jl, jpno3, jpnh4, jm
+      INTEGER :: ji, jj, jn, jk, jl, jpno3, jpnh4
       REAL(wp), DIMENSION(jpi,jpj,jpk) :: ztrfabm 
-      REAL(wp), POINTER, DIMENSION(:,:,:) :: pdat, xnegtr
+      REAL(wp), POINTER, DIMENSION(:,:,:) :: pdat
       REAL(wp), DIMENSION(jpi,jpj)    :: vint
+      REAL(wp), DIMENSION(jpi,jpj,jpj):: xnegtr
       REAL(wp) :: zcoef, ztra
 
 !!----------------------------------------------------------------------
@@ -125,20 +126,20 @@ CONTAINS
           nyear,'-',nmonth,'-',nday,' ',nsec_day," secs"
       IF(lwp) WRITE(numout,*) ' ~~~~~~~~~~~~~~'
 
-      IF (kt == nittrc000) CALL nemo_fabm_start
+      IF (kt == nittrc000) CALL nemo_fabm_start  
 
 
       ! update links to FABM to ensure that FABM is pointing to the correct time index !
       ! Send pointers to state data to FABM
-      do jn=1,jp_fabm
-         CALL model%link_interior_state_data(jn,tr(:,:,:,jp_fabm_m1+jn,Kmm))
-      end do
-      DO jn=1,jp_fabm_surface
-         CALL model%link_surface_state_data(jn,fabm_st2Dn(:,:,jn))
-      END DO
-      DO jn=1,jp_fabm_bottom
-         CALL model%link_bottom_state_data(jn,fabm_st2Dn(:,:,jp_fabm_surface+jn))
-      END DO
+!      do jn=1,jp_fabm
+!         CALL model%link_interior_state_data(jn,tr(:,:,:,jp_fabm_m1+jn,Kmm))
+!      end do
+!      DO jn=1,jp_fabm_surface
+!         CALL model%link_surface_state_data(jn,fabm_st2Dn(:,:,jn))
+!      END DO
+!      DO jn=1,jp_fabm_bottom
+!         CALL model%link_bottom_state_data(jn,fabm_st2Dn(:,:,jp_fabm_surface+jn))
+!      END DO
 
       ! Send pointers to environmental data to FABM
       !------- Mokrane -------------------------------
@@ -196,7 +197,7 @@ CONTAINS
 
      !-----------------------------------------------
 
-
+      !CALL model%link_horizontal_data(fabm_standard_variables%surface_downwelling_shortwave_flux, qsr(:,:))
       CALL model%link_interior_data(fabm_standard_variables%temperature, ts(:,:,:,jp_tem,Kmm))
       CALL model%link_horizontal_data(fabm_standard_variables%surface_temperature, ts(:,:,1,jp_tem,Kmm)) ! Mokrane
       CALL model%link_interior_data(fabm_standard_variables%practical_salinity, salinprac(:,:,:))
@@ -224,26 +225,34 @@ CONTAINS
 
       CALL compute_vertical_movement( kt, nn_adv, Kbb, Kmm, Krhs  )
 
-      CALL st2d_fabm_nxt( kt, Kbb, Kmm, Krhs  )
       ! Handling of the negative concentrations
       ! The biological SMS may generate negative concentrations
       ! Trends are tested at each grid cell. If a negative concentrations 
-      ! is created at a grid cell, all the sources and sinks at that grid 
-      ! cell are scale to avoid that negative concentration. This approach 
+      ! is created at a grid cell, all the sources and sinks at that grid
+      ! cell are scale to avoid that negative concentration. This approach
       ! is quite simplistic but it conserves mass.
       ! ------------------------------------------------------------------
+      
       ! Mokrane
       !xnegtr(:,:,:) = 1.e0
-      !DO jn = 1, 24 !jp_fabm
-      !   jm = jn !jp_fabm_m1+jn
+      !DO jn = 1, jp_fabm
       !    DO_3D( nn_hls, nn_hls, nn_hls, nn_hls, 1, jpk)
-      !       IF( ( tr(ji,jj,jk,jm,Kbb) + tr(ji,jj,jk,jm,Krhs) ) < 0.e0 ) THEN
-      !               ztra             = ABS( tr(ji,jj,jk,jm,Kbb) ) / ( ABS( tr(ji,jj,jk,jm,Krhs) ) + rtrn )
+
+      !       IF( ( tr(ji,jj,jk,jn,Kbb) + tr(ji,jj,jk,jn,Krhs) ) < 0.e0 ) THEN
+      !               ztra             = ABS( tr(ji,jj,jk,jn,Kbb) ) / ( ABS( tr(ji,jj,jk,jn,Krhs) ) + rtrn )
       !               xnegtr(ji,jj,jk) = MIN( xnegtr(ji,jj,jk),  ztra )
       !       ENDIF
+
       !    END_3D
-      !    tr(:,:,:,jm,Krhs) = ( xnegtr(:,:,:) * tr(:,:,:,jm,Krhs) ) / rDt_trc
+      ! ENDDO
+
+      ! DO jn = 1, jp_fabm
+             !tr(:,:,:,jn,Kbb) = tr(:,:,:,jn,Kbb) + xnegtr(:,:,:) * tr(:,:,:,jn,Krhs)
       !ENDDO
+
+
+
+      CALL st2d_fabm_nxt( kt, Kbb, Kmm, Krhs  )
 
       !------------------------------------------------------------------------
 
@@ -587,7 +596,7 @@ CONTAINS
       !
 
       ! Provide FABM with domain extents
-      CALL model%set_domain(jpi, jpj, jpk, rdt)
+      CALL model%set_domain(jpi, jpj, jpk, rdt/2)
       CALL model%set_domain_start(ntsi, ntsj, 1)
       CALL model%set_domain_stop(ntei, ntej, jpkm1)
 
@@ -617,16 +626,14 @@ CONTAINS
       !------- Mokrane -------------------------------
       IF (neos == -1) THEN
           salinprac(:,:,:) =  ts(:,:,:,jp_sal,Kmm) * 35.0_wp / 35.16504_wp
-          WRITE(numout,*) 'FABM : ratio neos =  ', 35.0_wp / 35.16504_wp
       ELSE
           salinprac(:,:,:) = ts(:,:,:,jp_sal,Kmm)
       ENDIF
-      WRITE(numout,*) 'FABM : neos =  ', neos
 
       !-----------------------------------------------
       CALL model%link_interior_data(fabm_standard_variables%practical_salinity, salinprac(:,:,:))
       IF (ALLOCATED(rho)) CALL model%link_interior_data(fabm_standard_variables%density, rho(:,:,:))
-      !IF (ALLOCATED(prn)) CALL model%link_interior_data(fabm_standard_variables%pressure, prn)
+      IF (ALLOCATED(prn)) CALL model%link_interior_data(fabm_standard_variables%pressure, prn)
       !IF (ALLOCATED(taubot)) CALL model%link_horizontal_data(fabm_standard_variables%bottom_stress, taubot(:,:))
       CALL model%link_horizontal_data(fabm_standard_variables%latitude, gphit)
       CALL model%link_horizontal_data(fabm_standard_variables%longitude, glamt)
@@ -653,6 +660,9 @@ CONTAINS
       CALL model%link_horizontal_data(fabm_standard_variables%cell_area,  e1e2t(:,:)) ! Mokrane: grid cell area
       CALL model%link_horizontal_data(model%get_horizontal_variable_id('fmmflx'), fmmflx(:,:))
       CALL model%link_interior_data(type_interior_standard_variable(name='ref_cell_thickness' , units='m'), e3t_0(:,:,:))
+
+
+
       !---------- Mokrane --------------------
 
       ik50 = 5        !  last level where depth less than 50 m
@@ -683,8 +693,8 @@ CONTAINS
       ! Add the external input of nutrients from nitrogen deposition
       !jpno3 = 1
       !jpnh4 = 2
-      WRITE(numout,*) 'ln_trc_sbc(jpno3) = ', ln_trc_sbc(jpno3)
-      WRITE(numout,*) 'ln_trc_sbc(jpnh4) = ', ln_trc_sbc(jpnh4) 
+      !WRITE(numout,*) 'ln_trc_sbc(jpno3) = ', ln_trc_sbc(jpno3)
+      !WRITE(numout,*) 'ln_trc_sbc(jpnh4) = ', ln_trc_sbc(jpnh4) 
       
       IF(ln_trc_sbc(jpno3)) THEN
               zndep_no3(:,:) = 0.
@@ -753,7 +763,7 @@ CONTAINS
 
       ! Check whether FABM has all required data
       ! [after this, the save attribute of diagnostic variables can no longer change!]
-      CALL model%start()
+      !CALL model%start()
 
       !started = .TRUE.
    END SUBROUTINE

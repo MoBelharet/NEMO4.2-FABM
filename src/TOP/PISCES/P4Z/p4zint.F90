@@ -11,6 +11,7 @@ MODULE p4zint
    USE oce_trc         !  shared variables between ocean and passive tracers
    USE trc             !  passive tracers common variables 
    USE sms_pisces      !  PISCES Source Minus Sink variables
+   USE iom 
 
    IMPLICIT NONE
    PRIVATE
@@ -38,6 +39,8 @@ CONTAINS
       !
       INTEGER  :: ji, jj, jk              ! dummy loop indices
       REAL(wp) :: zrum, zcodel, zargu, zvar
+      REAL(wp), DIMENSION(jpi,jpj) :: zrum_diag, zcodel_diag, zargu1_diag, zargu_diag
+      INTEGER   :: end_yr
       !!---------------------------------------------------------------------
       !
       IF( ln_timing )   CALL timing_start('p4z_int')
@@ -56,14 +59,18 @@ CONTAINS
       DO_2D( nn_hls, nn_hls, nn_hls, nn_hls )
          zvar = tr(ji,jj,1,jpsil,Kbb) * tr(ji,jj,1,jpsil,Kbb)
          xksimax(ji,jj) = MAX( xksimax(ji,jj), ( 1.+ 7.* zvar / ( xksilim * xksilim + zvar ) ) * 1e-6 )
+
       END_2D
       !
       ! At the end of each year, the half saturation constant for silica is 
       ! updated as this is based on the highest concentration reached over 
       ! the year
       ! -------------------------------------------------------------------
-      IF( nday_year == nyear_len(1) ) THEN
+      !IF( nday_year == nyear_len(1) ) THEN
+      end_yr= nyear_len(1) * 24 * 3600 / rn_Dt
+      IF(MOD(kt,end_yr) == 0 ) THEN
          xksi   (:,:) = xksimax(:,:)
+         WRITE(numout,*) "nday_year = " ,nday_year , " xksimax_final = " , xksimax
          xksimax(:,:) = 0._wp
       ENDIF
       !
@@ -72,14 +79,26 @@ CONTAINS
       zrum = REAL( nday_year - 80, wp ) / REAL( nyear_len(1), wp )
       zcodel = ASIN(  SIN( zrum * rpi * 2._wp ) * SIN( rad * 23.5_wp )  )
 
+
+      zrum_diag(:,:) = zrum 
+      zcodel_diag(:,:) = zcodel
       ! day length in hours
       strn(:,:) = 0.
       DO_2D( nn_hls, nn_hls, nn_hls, nn_hls )
          zargu = TAN( zcodel ) * TAN( gphit(ji,jj) * rad )
+         zargu1_diag(ji,jj) = zargu
          zargu = MAX( -1., MIN(  1., zargu ) )
          strn(ji,jj) = MAX( 0.0, 24. - 2. * ACOS( zargu ) / rad / 15. )
+
+         zargu_diag(ji,jj) = zargu
       END_2D
+      CALL iom_put("strn", strn(:,:) * tmask(:,:,1) )
+      CALL iom_put("zrum_diag", zrum_diag(:,:) * tmask(:,:,1) )
+      CALL iom_put("zcodel_diag", zcodel_diag(:,:) * tmask(:,:,1) )
+      CALL iom_put("zargu1_diag", zargu1_diag(:,:) * tmask(:,:,1) )
+      CALL iom_put("zargu_diag", zargu_diag(:,:) * tmask(:,:,1) )
       !
+
       DO_3D( nn_hls, nn_hls, nn_hls, nn_hls, 1, jpkm1 )
         ! denitrification factor computed from O2 levels
          ! This factor diagnoses below which level of O2 denitrification

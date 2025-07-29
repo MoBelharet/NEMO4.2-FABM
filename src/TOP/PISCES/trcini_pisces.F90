@@ -247,7 +247,7 @@ CONTAINS
          ! initialize the half saturation constant for silicate
          ! ----------------------------------------------------
          xksi(:,:)      = 2.e-6
-         xksimax(:,:)   = xksi(:,:)
+         xksimax(:,:)   = 0._wp !xksi(:,:) ! Mokrane replaced xksimax(:,:) =xksi(:,:) par xksimax(:,:)   = 0._wp
          consfe3(:,:,:) = 0._wp
          !
          sized(:,:,:) = 1.0

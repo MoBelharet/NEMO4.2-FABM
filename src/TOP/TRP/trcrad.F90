@@ -66,9 +66,9 @@ CONTAINS
       IF( ln_age     )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_age , jp_age                )  !  AGE
       IF( ll_cfc     )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_cfc0, jp_cfc1               )  !  CFC model
       IF( ln_c14     )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_c14 , jp_c14                )  !  C14
-      IF( ln_pisces  )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_pcs0, jp_pcs1, cpreserv='Y' )  !  PISCES model
+      IF( ln_pisces  )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_pcs0, jp_pcs1 , cpreserv='Y' )  !  PISCES model
       IF( ln_my_trc  )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_myt0, jp_myt1               )  !  MY_TRC model
-      IF( ln_fabm    )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_fabm0,jp_fabm1               )  !  FABM model
+      IF( ln_fabm    )   CALL trc_rad_sms( kt, Kbb, Kmm, ptr, jp_fabm0,jp_fabm1 , cpreserv='Y')  !  FABM model
       !
       IF(sn_cfctl%l_prttrc) THEN      ! print mean trends (used for debugging)
          WRITE(charout, FMT="('rad')")
