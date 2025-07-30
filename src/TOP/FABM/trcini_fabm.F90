@@ -50,6 +50,7 @@ MODULE trcini_fabm
       procedure :: log_message => nemo_fabm_driver_log_message
    end type
 
+
    !!----------------------------------------------------------------------
    !! NEMO/TOP 4.0 , NEMO Consortium (2018)
    !! $Id$
@@ -85,6 +86,7 @@ CONTAINS
       ! This must be done before writing field_def_fabm.xml, as that file
       ! also describes the additional input variables.
       call initialize_inputs
+
 
       IF (lwp) THEN
          ! write field_def_fabm.xml on lead process,  TODO i  not lon lead pocess then ... call sleep(for a second or two)  ?
@@ -134,20 +136,20 @@ CONTAINS
          END DO
          WRITE (xml_unit,1000) ' </field_group>'
 !-----     Mokrane
-         WRITE (xml_unit,1000) ' <field_group id="fabm_input" grid_ref="grid_T_2D">'
-          input_data => first_input_data
-          DO WHILE (ASSOCIATED(input_data))
-            input_pointer => input_data
-            CALL write_input_xml(xml_unit,input_pointer)
-             input_data => input_data%next
-          END DO
-         river_data => first_river_data
-         DO WHILE (ASSOCIATED(river_data))
-           input_pointer => river_data
-           CALL write_input_xml(xml_unit,input_pointer,3)
-            river_data => river_data%next
-          END DO
-          WRITE (xml_unit,1000) ' </field_group>'
+!         WRITE (xml_unit,1000) ' <field_group id="fabm_input" grid_ref="grid_T_2D">'
+!          input_data => first_input_data
+!          DO WHILE (ASSOCIATED(input_data))
+!            input_pointer => input_data
+!            CALL write_input_xml(xml_unit,input_pointer)
+!             input_data => input_data%next
+!          END DO
+!         river_data => first_river_data
+!         DO WHILE (ASSOCIATED(river_data))
+!           input_pointer => river_data
+!           CALL write_input_xml(xml_unit,input_pointer,3)
+!            river_data => river_data%next
+!          END DO
+!          WRITE (xml_unit,1000) ' </field_group>'
 !------- Mokrane
          WRITE (xml_unit,1000) '</field_definition>'
 
@@ -156,6 +158,8 @@ CONTAINS
       IF( lk_mpp )   CALL mppsync !Ensure field_def_fabm is ready.
 
 1000 FORMAT (A)
+
+      
 
    END SUBROUTINE nemo_fabm_configure
 
@@ -323,6 +327,7 @@ CONTAINS
       ! Constant initial values from the fabm namelist are set to the arrays here
       IF(trc_sms_fabm_alloc(Kmm) /= 0) CALL ctl_stop( 'STOP', 'trc_ini_fabm: unable to allocate FABM arrays' )
 
+
       ! Log mapping of FABM states:
       IF (lwp) THEN
          IF (jp_fabm.gt.0) WRITE(numout,*) " FABM tracers:"
@@ -384,6 +389,11 @@ CONTAINS
        END IF
    END IF
    fabm_st2Db = fabm_st2Dn
+
+   !------ Mokrane : start fabm-----
+   CALL model%start()
+   !-------------------
+
    END SUBROUTINE trc_ini_fabm
 
    SUBROUTINE nemo_fabm_driver_fatal_error(self, location, message)
